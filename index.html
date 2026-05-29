@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thinkr — Dump your thoughts. AI does the rest.</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+ 
+<!-- Nav -->
+<nav>
+  <a class="nav-logo" href="#">Thinkr</a>
+  <div class="nav-right">
+    <button class="nav-btn active" onclick="switchMode('braindump')" id="navBrain">🧠 BrainDump</button>
+    <button class="nav-btn" onclick="switchMode('moodboard')" id="navMood">🎨 MoodBoard</button>
+  </div>
+</nav>
+ 
+<!-- BrainDump Mode -->
+<section id="braindumpMode" class="mode active">
+  <div class="mode-hero">
+    <h1>Dump <em>everything.</em></h1>
+    <p class="mode-sub">Type whatever's in your head. Don't filter. Don't organize. Just dump it all out — AI will make sense of it.</p>
+  </div>
+ 
+  <div class="dump-container">
+    <div class="dump-left">
+      <div class="dump-label">Your thoughts</div>
+      <textarea 
+        id="dumpInput" 
+        placeholder="Just start typing... anything. Tasks, ideas, worries, random thoughts, grocery list, meeting notes — all of it."
+        spellcheck="false"
+      ></textarea>
+      <div class="dump-footer">
+        <span class="char-count" id="charCount">0 words</span>
+        <button class="organize-btn" id="organizeBtn" onclick="organize()">
+          ✨ Organize with AI
+        </button>
+      </div>
+      <div class="error-box" id="errorBox"></div>
+    </div>
+ 
+    <div class="dump-right">
+      <div class="dump-label">Organized</div>
+      <div class="results-empty" id="resultsEmpty">
+        <div class="empty-icon">🌀</div>
+        <p>Your organized thoughts will appear here</p>
+      </div>
+      <div class="results-content" id="resultsContent" style="display:none;">
+        <div class="results-actions">
+          <button class="action-btn" onclick="copyResults()">📋 Copy</button>
+          <button class="action-btn" onclick="clearAll()">🗑️ Clear</button>
+        </div>
+        <div id="categoriesOutput"></div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- MoodBoard Mode -->
+<section id="moodboardMode" class="mode">
+  <div class="mode-hero">
+    <h1>Build your <em>mood.</em></h1>
+    <p class="mode-sub">Upload images, draw freely, and let AI extract your color palette and design vibe.</p>
+  </div>
+ 
+  <div class="mood-container">
+ 
+    <!-- Canvas Area -->
+    <div class="canvas-panel">
+      <div class="canvas-toolbar">
+        <div class="tool-group">
+          <button class="tool-btn active" id="toolDraw" onclick="setTool('draw')" title="Draw">✏️</button>
+          <button class="tool-btn" id="toolErase" onclick="setTool('erase')" title="Erase">⬜</button>
+          <button class="tool-btn" id="toolText" onclick="setTool('text')" title="Text">T</button>
+        </div>
+        <div class="tool-group">
+          <input type="color" id="colorPicker" value="#2563eb" title="Color" />
+          <input type="range" id="brushSize" min="2" max="30" value="4" title="Size" />
+        </div>
+        <div class="tool-group">
+          <button class="tool-btn" onclick="clearCanvas()" title="Clear">🗑️</button>
+          <button class="tool-btn" onclick="downloadCanvas()" title="Download">⬇️</button>
+        </div>
+        <label class="upload-img-btn">
+          📸 Add Image
+          <input type="file" id="imgUpload" accept="image/*" hidden onchange="addImageToCanvas(event)" />
+        </label>
+      </div>
+      <canvas id="moodCanvas"></canvas>
+    </div>
+ 
+    <!-- Palette Panel -->
+    <div class="palette-panel">
+      <div class="dump-label">AI Color Palette</div>
+      <div class="palette-empty" id="paletteEmpty">
+        <div class="empty-icon">🎨</div>
+        <p>Draw or upload an image, then click Generate Palette</p>
+      </div>
+      <div class="palette-content" id="paletteContent" style="display:none;">
+        <div id="paletteColors"></div>
+        <div id="paletteDetails"></div>
+      </div>
+      <button class="organize-btn" id="paletteBtn" onclick="generatePalette()" style="margin-top:16px; width:100%;">
+        🎨 Generate Palette
+      </button>
+      <div class="error-box" id="paletteError"></div>
+    </div>
+ 
+  </div>
+</section>
+ 
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-inner">
+    <div class="loading-spinner"></div>
+    <p class="loading-text" id="loadingText">Thinking...</p>
+  </div>
+</div>
+ 
+<script src="script.js"></script>
+</body>
+</html>
+ 

@@ -7,13 +7,11 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-    const { text } = body;
-
+    const { text } = req.body;
     if (!text) return res.status(400).json({ error: "No text" });
 
     const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "No API key" });
+    if (!apiKey) return res.status(500).json({ error: "No API key found" });
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -22,26 +20,28 @@ export default async function handler(req, res) {
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "mixtral-8x7b-32768",
-        messages: [
-          { role: "system", content: "Organize thoughts into JSON categories. Return only valid JSON." },
-          { role: "user", content: `Organize into categories (Tasks, Ideas, Health, Learning, Calendar, Other): ${text}` }
-        ],
-        max_tokens: 800,
+        model: "llama-3.1-70b-versatile",
+        messages: [{
+          role: "user",
+          content: `Organize into JSON with categories: ${text}`
+        }],
+        max_tokens: 500,
       }),
     });
 
     const data = await response.json();
-    if (!data.choices?.[0]?.message?.content) {
-      return res.status(500).json({ error: JSON.stringify(data) });
+    console.log("Groq response:", data);
+
+    if (!response.ok) {
+      return res.status(500).json({ error: `Groq: ${data.error?.message || JSON.stringify(data)}` });
     }
 
-    let responseText = data.choices[0].message.content.trim();
-    responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const categories = JSON.parse(responseText);
+    const categories = {
+      "Tasks": ["Your tasks here"],
+      "Ideas": ["Your ideas here"]
+    };
 
     res.status(200).json({ categories });
-    
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
